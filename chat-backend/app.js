@@ -29,7 +29,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sendMessage', (message) => {
-        io.emit('receiveMessage', { message: message, username: users[socket.id] });
+        io.emit('receiveMessage', {
+            message: message,
+            username: users[socket.id],
+            alignment: 'right'  // Le message envoyé par l'utilisateur est aligné à droite
+        });
     });
 
     socket.on('disconnect', () => {
