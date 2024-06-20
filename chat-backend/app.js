@@ -24,9 +24,9 @@ io.on('connection', (socket) => {
     // Je transmet au front le nombre de sockets connecter au serveur
     io.emit('userCount', socketsConnected.size);
 
-    // Je transmet le sendMessage au front
-    socket.on('sendMessage', (message) => {  // On récupère le message
-        io.emit('message', message); 
+    // L'évènement qui transmet le message au front
+    socket.on('message', (message) => {  // On récupère le message
+        io.emit('message', message);
     });
 
     // Je retransmet à tout le monde, lorsqu'on user individual setUsername
