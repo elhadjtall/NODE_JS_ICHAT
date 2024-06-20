@@ -21,21 +21,21 @@ io.on('connection', (socket) => {
     console.log(`New user connected with id: ${socket.id}`);
     socketsConnected.add(socket.id);
 
+    // Je transmet au front le nombre de sockets connecter au serveur
     io.emit('userCount', socketsConnected.size);
 
+    // Je transmet le sendMessage au front
+    socket.on('sendMessage', (message) => {  // On récupère le message
+        io.emit('message', message); 
+    });
+
+    // Je retransmet à tout le monde, lorsqu'on user individual setUsername
     socket.on('setUsername', (username) => {
         users[socket.id] = username;
         io.emit('updateUsersList', users);
     });
 
-    socket.on('sendMessage', (message) => {
-        io.emit('receiveMessage', {
-            message: message,
-            username: users[socket.id],
-            alignment: 'right'  // Le message envoyé par l'utilisateur est aligné à droite
-        });
-    });
-
+    // Nous allons gerer la déconnexion des users :
     socket.on('disconnect', () => {
         console.log(`User disconnected with id: ${socket.id}`);
         socketsConnected.delete(socket.id);
