@@ -7,14 +7,14 @@ const http = require('http');
 
 app.use(cors());
 
-const server = http.createServer(app);
+const server = http.createServer(app); 
 const io = socket(server, {
     cors: {
         origin: 'http://localhost:5173',
     }
 });
 
-let socketsConnected = new Set();
+let socketsConnected = new Set(); 
 let users = {};
 
 io.on('connection', (socket) => {
@@ -45,10 +45,13 @@ io.on('connection', (socket) => {
     });
 });
 
+
+// Je met le serveur en ecoutant sur le port 3000
 app.get('/', (req, res) => {
     res.send('Bonjour, welcome to my server');
 });
 
+// Je met le serveur en ecoutant sur le port 3000
 server.listen(port, () => {
     console.log(`Server running on port http://localhost:${port}`);
 });
