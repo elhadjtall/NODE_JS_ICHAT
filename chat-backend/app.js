@@ -29,6 +29,10 @@ io.on('connection', (socket) => {
         io.emit('message', message);
     });
 
+    // l'évènement qui permet d'ecouter qu'on peut ecrit
+    socket.on('typing', (user) => {
+        socket.broadcast.emit('typing', user);
+    });
     // Je retransmet à tout le monde, lorsqu'on user individual setUsername
     socket.on('setUsername', (username) => {
         users[socket.id] = username;
