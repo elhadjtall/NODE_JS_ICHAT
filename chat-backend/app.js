@@ -7,39 +7,40 @@ const http = require('http');
 
 app.use(cors());
 
-const server = http.createServer(app); 
+const server = http.createServer(app);
 const io = socket(server, {
     cors: {
         origin: 'http://localhost:5173',
     }
 });
 
-let socketsConnected = new Set(); 
+let socketsConnected = new Set();
 let users = {};
 
 io.on('connection', (socket) => {
     console.log(`New user connected with id: ${socket.id}`);
     socketsConnected.add(socket.id);
 
-    // Je transmet au front le nombre de sockets connecter au serveur
     io.emit('userCount', socketsConnected.size);
 
-    // L'évènement qui transmet le message au front
-    socket.on('message', (message) => {  // On récupère le message
-        io.emit('message', message);
+    socket.on('message', (message) => {
+        if (message.recipient === 'all') {
+            io.emit('message', message);
+        } else {
+            socket.to(message.recipient).emit('message', message);
+            socket.emit('message', message); // Also send back to sender
+        }
     });
 
-    // l'évènement qui permet d'ecouter qu'on peut ecrit
     socket.on('typing', (user) => {
         socket.broadcast.emit('typing', user);
     });
-    // Je retransmet à tout le monde, lorsqu'on user individual setUsername
+
     socket.on('setUsername', (username) => {
         users[socket.id] = username;
         io.emit('updateUsersList', users);
     });
 
-    // Nous allons gerer la déconnexion des users :
     socket.on('disconnect', () => {
         console.log(`User disconnected with id: ${socket.id}`);
         socketsConnected.delete(socket.id);
@@ -49,13 +50,10 @@ io.on('connection', (socket) => {
     });
 });
 
-
-// Je met le serveur en ecoutant sur le port 3000
 app.get('/', (req, res) => {
     res.send('Bonjour, welcome to my server');
 });
 
-// Je met le serveur en ecoutant sur le port 3000
 server.listen(port, () => {
     console.log(`Server running on port http://localhost:${port}`);
 });
