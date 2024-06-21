@@ -7,14 +7,14 @@ const http = require('http');
 
 app.use(cors());
 
-const server = http.createServer(app);
+const server = http.createServer(app); 
 const io = socket(server, {
     cors: {
         origin: 'http://localhost:5173',
     }
 });
 
-let socketsConnected = new Set();
+let socketsConnected = new Set(); 
 let users = {};
 
 io.on('connection', (socket) => {
@@ -24,16 +24,15 @@ io.on('connection', (socket) => {
     io.emit('userCount', socketsConnected.size);
 
     socket.on('message', (message) => {
-        if (message.recipient === 'all') {
-            io.emit('message', message);
-        } else {
-            socket.to(message.recipient).emit('message', message);
-            socket.emit('message', message); // Also send back to sender
-        }
+        io.emit('message', message);
     });
 
     socket.on('typing', (user) => {
         socket.broadcast.emit('typing', user);
+    });
+
+    socket.on('stopTyping', (user) => {
+        socket.broadcast.emit('stopTyping', user);
     });
 
     socket.on('setUsername', (username) => {
